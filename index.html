@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Be My Valentine? 💕</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Floating hearts animation */
+        .heart {
+            position: absolute;
+            font-size: 30px;
+            animation: float 6s infinite;
+            opacity: 0;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 60px 40px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 500px;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            color: #e63946;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        p {
+            color: #555;
+            font-size: 1.2em;
+            margin-bottom: 40px;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+            position: relative;
+            height: 250px;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        #yesBtn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            position: absolute;
+            left: 50%;
+            top: 30%;
+            transform: translate(-50%, -50%);
+            transition: all 0.3s ease;
+            z-index: 5;
+        }
+
+        #yesBtn:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: 0 10px 30px rgba(245, 87, 108, 0.5);
+        }
+
+        #noBtn {
+            background: #ccc;
+            color: #666;
+            position: absolute;
+            transition: all 0.1s ease;
+            left: 50%;
+            top: 60%;
+            transform: translate(-50%, -50%);
+        }
+
+        #noBtn:hover {
+            background: #bbb;
+        }
+
+        .emoji {
+            font-size: 4em;
+            margin-bottom: 20px;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        /* Success page styles */
+        .success-page {
+            display: none;
+            text-align: center;
+        }
+
+        .success-page h1 {
+            font-size: 3em;
+            color: #e63946;
+            margin-bottom: 30px;
+        }
+
+        .success-page .celebration {
+            font-size: 6em;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="proposalPage">
+        <div class="emoji">💝</div>
+        <h1>Will You Be My Valentine Pertunia</h1>
+        <p>I've been thinking about this for a while... 💕</p>
+        
+        <div class="button-container">
+            <button id="yesBtn">Yes! 💖</button>
+            <button id="noBtn">No</button>
+        </div>
+    </div>
+
+    <div class="container success-page" id="successPage">
+        <div class="celebration">🎉</div>
+        <h1>Yay! You made me the happiest! 💕</h1>
+        <p style="font-size: 1.5em; color: #e63946;">I can't wait to spend Valentine's Day with you! 🌹</p>
+        <div style="margin-top: 30px; font-size: 3em;">😍💑💖</div>
+    </div>
+
+    <script>
+        // EmailJS Configuration
+        // Replace these with your own EmailJS credentials
+        const EMAIL_CONFIG = {
+            serviceID: 'service_886otvq',
+            templateID: 'template_lxdvedr',
+            publicKey: 'sY1VmLS0mEIykXNNp',
+            toEmail: 'mokoenabradley@gmail.com' // Your email address
+        };
+
+        // Initialize EmailJS
+        emailjs.init(EMAIL_CONFIG.publicKey);
+
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const proposalPage = document.getElementById('proposalPage');
+        const successPage = document.getElementById('successPage');
+
+        // Create floating hearts
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = ['💕', '💖', '💗', '💝', '❤️'][Math.floor(Math.random() * 5)];
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = (Math.random() * 3 + 4) + 's';
+            heart.style.animationDelay = Math.random() * 2 + 's';
+            document.body.appendChild(heart);
+
+            setTimeout(() => {
+                heart.remove();
+            }, 8000);
+        }
+
+        // Create hearts periodically
+        setInterval(createHeart, 500);
+
+        // Send email notification
+        function sendNotification() {
+            const templateParams = {
+                to_email: EMAIL_CONFIG.toEmail,
+                message: '🎉 Great news! Your Valentine said YES! 💕',
+                timestamp: new Date().toLocaleString()
+            };
+
+            emailjs.send(EMAIL_CONFIG.serviceID, EMAIL_CONFIG.templateID, templateParams)
+                .then(function(response) {
+                    console.log('Notification sent successfully!', response.status, response.text);
+                }, function(error) {
+                    console.log('Failed to send notification:', error);
+                });
+        }
+
+        // Yes button click
+        yesBtn.addEventListener('click', () => {
+            proposalPage.style.display = 'none';
+            successPage.style.display = 'block';
+            
+            // Send notification
+            sendNotification();
+        });
+
+        // No button hover - moves to random position far from cursor
+        noBtn.addEventListener('mouseover', () => {
+            moveNoButton();
+        });
+
+        // Track mouse movement near the No button
+        document.addEventListener('mousemove', (e) => {
+            const btnRect = noBtn.getBoundingClientRect();
+            const btnCenterX = btnRect.left + btnRect.width / 2;
+            const btnCenterY = btnRect.top + btnRect.height / 2;
+            
+            const distance = Math.sqrt(
+                Math.pow(e.clientX - btnCenterX, 2) + 
+                Math.pow(e.clientY - btnCenterY, 2)
+            );
+            
+            // If cursor is within 150px of the button, move it away
+            if (distance < 150) {
+                moveNoButton();
+            }
+        });
+
+        function moveNoButton() {
+            const container = document.querySelector('.button-container');
+            const containerRect = container.getBoundingClientRect();
+            
+            const maxX = containerRect.width - noBtn.offsetWidth;
+            const maxY = containerRect.height - noBtn.offsetHeight;
+            
+            let randomX, randomY;
+            let attempts = 0;
+            
+            // Keep trying until we find a position far from Yes button
+            do {
+                randomX = Math.random() * maxX;
+                randomY = Math.random() * maxY;
+                attempts++;
+            } while (attempts < 10 && Math.abs(randomX - maxX/2) < 100 && Math.abs(randomY - maxY/2) < 80);
+            
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+            noBtn.style.transform = 'translate(0, 0)';
+        }
+
+        // No button click (for mobile)
+        noBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            moveNoButton();
+        });
+    </script>
+</body>
+</html>
